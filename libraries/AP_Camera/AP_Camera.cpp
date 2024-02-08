@@ -324,6 +324,25 @@ MAV_RESULT AP_Camera::handle_command(const mavlink_command_int_t &packet)
             break;
         }
         return MAV_RESULT_DENIED;
+    case MAV_CMD_SET_CAMERA_LENS:
+        // sanity check instance
+        if (is_negative(packet.param1) || packet.param1 > AP_CAMERA_MAX_INSTANCES) {
+            return MAV_RESULT_DENIED;
+        }
+        if (is_zero(packet.param1)) {
+            // set lens for every backend
+            bool accepted = false;
+            for (uint8_t i = 0; i < AP_CAMERA_MAX_INSTANCES; i++) {
+                if (_backends[i] != nullptr) {
+                    accepted |= set_lens(packet.param2);
+                }
+            }
+            return accepted ? MAV_RESULT_ACCEPTED : MAV_RESULT_DENIED;
+        }
+        if (set_lens(packet.param1-1, packet.param2)) {
+            return MAV_RESULT_ACCEPTED;
+        }
+        return MAV_RESULT_DENIED;
     case MAV_CMD_IMAGE_START_CAPTURE:
         // param1 : camera id
         // param2 : interval (in seconds)
