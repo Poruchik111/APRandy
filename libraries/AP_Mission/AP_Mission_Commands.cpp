@@ -168,6 +168,17 @@ bool AP_Mission::start_command_camera(const AP_Mission::Mission_Command& cmd)
         }
         return false;
 
+    case MAV_CMD_SET_CAMERA_LENS:
+        if (cmd.content.set_camera_lens.instance == 0) {
+            // set lens for every backend
+            bool ret = false;
+            for (uint8_t i=0; i<AP_CAMERA_MAX_INSTANCES; i++) {
+                ret |= camera->set_lens(i, cmd.content.set_camera_lens.lens);
+            }
+            return ret;
+        }
+        return camera->set_lens(cmd.content.set_camera_lens.instance-1, cmd.content.set_camera_lens.lens);
+
     case MAV_CMD_IMAGE_START_CAPTURE:
         // check if this is a single picture request (e.g. total images is 1 or interval and total images are zero)
         if ((cmd.content.image_start_capture.total_num_images == 1) ||
