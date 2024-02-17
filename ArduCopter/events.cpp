@@ -507,5 +507,25 @@ void Copter::do_failsafe_action(FailsafeAction action, ModeReason reason){
         copter.g2.gripper.release();
     }
 #endif
-}
 
+}
+void Copter::RF_amp_power() {  
+    // switching RF copter RC amplifier in dependence of hight and distance to home
+    if ((home_distance() < 5000) && (baro_alt < 3500)){
+        copter.ampstate = false;
+    }
+    if (baro_alt >= 5000){
+       copter.ampstate = true;
+    }
+       
+    if (copter.ampswitch != copter.ampstate){
+        copter.ampswitch = copter.ampstate;
+        if (copter.ampswitch){
+            copter.relay.off(0); //Matek BEC control inverted on PCB
+            gcs().send_text(MAV_SEVERITY_WARNING, "RF AMP ON");
+        }else{
+            copter.relay.on(0);
+            gcs().send_text(MAV_SEVERITY_WARNING, "RF AMP OFF");
+        }
+    }
+}

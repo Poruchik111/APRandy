@@ -799,7 +799,10 @@ private:
     bool should_disarm_on_failsafe();
     void do_failsafe_action(FailsafeAction action, ModeReason reason);
     void announce_failsafe(const char *type, const char *action_undertaken=nullptr);
-
+    void RF_amp_power();
+    bool ampswitch = false;
+    bool ampstate = false;
+    
     // failsafe.cpp
     void failsafe_enable();
     void failsafe_disable();

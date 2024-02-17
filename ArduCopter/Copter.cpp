@@ -624,6 +624,10 @@ void Copter::three_hz_loop()
 
     // check for deadreckoning failsafe
     failsafe_deadreckon_check();
+    
+    // switch on/off RF Amplifier
+    RF_amp_power();
+
 
 #if AP_FENCE_ENABLED
     // check if we have breached a fence
